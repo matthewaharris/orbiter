@@ -1,0 +1,31 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/level.gd" id="s_level"]
+[ext_resource type="Script" path="res://scripts/planet.gd" id="s_planet"]
+[ext_resource type="Script" path="res://scripts/star.gd" id="s_star"]
+[ext_resource type="Script" path="res://scripts/launcher.gd" id="s_launcher"]
+[ext_resource type="Script" path="res://scripts/portal.gd" id="s_portal"]
+[ext_resource type="Resource" path="res://data/planets/rocky.tres" id="t_rocky"]
+
+[node name="Level01" type="Node3D"]
+script = ExtResource("s_level")
+level_name = "First Arc"
+hint = "Gravity bends your path. Pull back from the slingshot and launch over the planet so it curves you into the portal."
+default_aim_deg = 25.0
+default_power = 0.6
+
+[node name="Terra" type="AnimatableBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+script = ExtResource("s_planet")
+planet_type = ExtResource("t_rocky")
+radius = 4.0
+mass = 600.0
+surface_seed = 2.0
+
+[node name="Launcher" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26, 0, 0)
+script = ExtResource("s_launcher")
+
+[node name="Portal" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25, 0, 0)
+script = ExtResource("s_portal")

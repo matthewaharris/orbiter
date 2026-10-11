@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="PlanetType" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/planet_type.gd" id="1_pt"]
+
+[resource]
+script = ExtResource("1_pt")
+display_name = "Barren Moon"
+surface = 0
+color_low = Color(0.22, 0.22, 0.24, 1)
+color_mid = Color(0.42, 0.42, 0.44, 1)
+color_high = Color(0.72, 0.72, 0.75, 1)
+noise_scale = 3.0
+atmosphere_glow = 0.0

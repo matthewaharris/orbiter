@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="PlanetType" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/planet_type.gd" id="1_pt"]
+
+[resource]
+script = ExtResource("1_pt")
+display_name = "Ice World"
+surface = 3
+color_low = Color(0.08, 0.32, 0.7, 1)
+color_mid = Color(0.72, 0.84, 0.95, 1)
+color_high = Color(0.95, 0.98, 1, 1)
+emission_color = Color(0.3, 0.7, 1, 1)
+emission_strength = 2.0
+noise_scale = 2.0
+atmosphere_color = Color(0.6, 0.85, 1, 1)
+atmosphere_glow = 0.7
+wind = 2
+wind_strength = 30.0
+wind_reach = 3.5
+pulse_period = 4.0
+pulse_duration = 0.6

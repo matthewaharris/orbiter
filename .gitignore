@@ -1,0 +1,11 @@
+# Godot
+game/.godot/
+game/export/
+*.translation
+# Blender
+*.blend1
+*.blend@
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/

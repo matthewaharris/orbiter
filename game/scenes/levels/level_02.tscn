@@ -1,0 +1,41 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/level.gd" id="s_level"]
+[ext_resource type="Script" path="res://scripts/planet.gd" id="s_planet"]
+[ext_resource type="Script" path="res://scripts/star.gd" id="s_star"]
+[ext_resource type="Script" path="res://scripts/launcher.gd" id="s_launcher"]
+[ext_resource type="Script" path="res://scripts/portal.gd" id="s_portal"]
+[ext_resource type="Resource" path="res://data/planets/ocean.tres" id="t_ocean"]
+[ext_resource type="Resource" path="res://data/planets/rocky.tres" id="t_rocky"]
+
+[node name="Level02" type="Node3D"]
+script = ExtResource("s_level")
+level_name = "Twin Pull"
+hint = "Two gravity wells. The storm world's winds swirl you around it (follow the dashes). The preview can't see wind."
+default_aim_deg = 40.0
+default_power = 0.6
+
+[node name="Oceanus" type="AnimatableBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 3, 0)
+script = ExtResource("s_planet")
+planet_type = ExtResource("t_ocean")
+radius = 3.5
+mass = 550.0
+surface_seed = 3.0
+
+[node name="Rust" type="AnimatableBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, -7, 0)
+script = ExtResource("s_planet")
+planet_type = ExtResource("t_rocky")
+radius = 3.0
+mass = 450.0
+surface_seed = 7.0
+axial_tilt_deg = -12.0
+
+[node name="Launcher" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32, -14, 0)
+script = ExtResource("s_launcher")
+
+[node name="Portal" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 12, 0)
+script = ExtResource("s_portal")

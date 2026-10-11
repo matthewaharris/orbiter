@@ -1,0 +1,47 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/level.gd" id="s_level"]
+[ext_resource type="Script" path="res://scripts/planet.gd" id="s_planet"]
+[ext_resource type="Script" path="res://scripts/star.gd" id="s_star"]
+[ext_resource type="Script" path="res://scripts/launcher.gd" id="s_launcher"]
+[ext_resource type="Script" path="res://scripts/portal.gd" id="s_portal"]
+[ext_resource type="Resource" path="res://data/planets/gas_giant.tres" id="t_gas_giant"]
+[ext_resource type="Resource" path="res://data/planets/moon.tres" id="t_moon"]
+
+[node name="Level04" type="Node3D"]
+script = ExtResource("s_level")
+level_name = "Moon Window"
+hint = "A moon sweeps around the giant every 10 seconds. Time your launch to slip past it. The giant's thick atmosphere drags at you."
+default_aim_deg = 15.0
+default_power = 0.65
+time_limit = 25.0
+
+[node name="Jove" type="AnimatableBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+script = ExtResource("s_planet")
+planet_type = ExtResource("t_gas_giant")
+radius = 6.0
+mass = 1500.0
+surface_seed = 4.0
+spin_speed = 0.12
+axial_tilt_deg = 14.0
+
+[node name="Io" type="AnimatableBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13, 0, 0)
+script = ExtResource("s_planet")
+planet_type = ExtResource("t_moon")
+radius = 1.4
+mass = 120.0
+surface_seed = 11.0
+orbit_center = NodePath("../Jove")
+orbit_radius = 13.0
+orbit_period = 10.0
+orbit_phase_deg = 90.0
+
+[node name="Launcher" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -34, -12, 0)
+script = ExtResource("s_launcher")
+
+[node name="Portal" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 32, 10, 0)
+script = ExtResource("s_portal")

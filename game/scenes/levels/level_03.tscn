@@ -1,0 +1,44 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/level.gd" id="s_level"]
+[ext_resource type="Script" path="res://scripts/planet.gd" id="s_planet"]
+[ext_resource type="Script" path="res://scripts/star.gd" id="s_star"]
+[ext_resource type="Script" path="res://scripts/launcher.gd" id="s_launcher"]
+[ext_resource type="Script" path="res://scripts/portal.gd" id="s_portal"]
+[ext_resource type="Resource" path="res://data/planets/ice.tres" id="t_ice"]
+
+[node name="Level03" type="Node3D"]
+script = ExtResource("s_level")
+level_name = "Solar Weather"
+hint = "Stars push with gusty solar wind and fire CMEs on a schedule. Watch the star charge, then launch between shockwaves or ride one."
+use_sun = false
+default_aim_deg = 20.0
+default_power = 0.6
+
+[node name="Sol" type="AnimatableBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+script = ExtResource("s_star")
+radius = 3.0
+mass = 900.0
+solar_wind = 1.5
+cme_period = 9.0
+cme_charge_time = 2.5
+cme_speed = 14.0
+cme_strength = 25.0
+cme_offset = 3.0
+
+[node name="Frost" type="AnimatableBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, -11, 0)
+script = ExtResource("s_planet")
+planet_type = ExtResource("t_ice")
+radius = 2.2
+mass = 250.0
+surface_seed = 5.0
+
+[node name="Launcher" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32, -12, 0)
+script = ExtResource("s_launcher")
+
+[node name="Portal" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28, 14, 0)
+script = ExtResource("s_portal")
