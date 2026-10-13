@@ -6,13 +6,15 @@ const SOFTENING := 0.25
 
 
 ## A frozen copy of every gravity source: [{pos, mass, radius, node}].
+## Any Node3D in the "gravity_sources" group with `mass` and `radius` vars counts (Planet, BlackHole).
 static func snapshot(tree: SceneTree) -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
 	for n in tree.get_nodes_in_group(&"gravity_sources"):
-		var body := n as Planet
+		var body := n as Node3D
 		if body == null or not body.is_inside_tree():
 			continue
-		out.append({pos = body.global_position, mass = body.mass, radius = body.radius, node = body})
+		out.append({pos = body.global_position, mass = float(body.get(&"mass")),
+			radius = float(body.get(&"radius")), node = body})
 	return out
 
 

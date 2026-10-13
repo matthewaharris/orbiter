@@ -49,10 +49,15 @@ Install Godot, Blender, and the MCP servers. Create the repo and project skeleto
   ship engine trail, portal swirl, crash explosion, win burst.
 
 ### Phase 2: Roguelite run loop
-- A run is a sector map of procedurally assembled levels from the world scheme (`docs/WORLD_SCHEME.md`).
-- Pick 1 of 3 upgrades after each clear: boost charge, black hole deployer, longer preview, CME shield, mass reducer.
-- Hull integrity: hazards damage you instead of instantly killing you. The run ends at 0.
-- Meta progression: unlock parts between runs.
+- [x] Run state: hull (crash = -1) and fuel (launch = -1). The run ends at 0 of either. (`run_state.gd`)
+- [x] Pick 1 of 3 upgrades after each clear, from a weighted catalog (`upgrades.gd`, `upgrade_picker.gd`):
+  booster, player-placed black hole, sensors, plating, deflector, magnetic shield, launch power, portal magnet,
+  plus consumables.
+- [x] Stardust rewards (first-try and no-preview bonuses), banked between runs in `user://orbiter_save.cfg`.
+- [ ] A run is a sector map of procedurally assembled levels from the world scheme (`docs/WORLD_SCHEME.md`).
+  Right now a run is the 5 handmade levels in order.
+- [ ] More upgrades: mass reducer, grav anchor, CME early warning, rarer "legendary" picks.
+- [ ] Meta progression: spend stardust to unlock parts between runs (feeds into Phase 3).
 
 ### Phase 3: Ship builder (KSP flavor)
 - Modular ship: hull + engine + sensor + utility slots. Each part has mass, a stat, and an art piece (Blender).

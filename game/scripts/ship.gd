@@ -3,7 +3,7 @@ extends RigidBody3D
 ## The player's craft. Godot physics moves it; we add gravity + environment forces each tick.
 ## Motion is locked to the Z=0 plane; the 3D model banks and turns for the chase cam.
 
-signal crashed(at: Vector3)
+signal crashed(at: Vector3, body: Node3D)
 
 const MODEL := preload("res://assets/models/ship.glb")
 const MODEL_SCALE := 0.75
@@ -15,6 +15,12 @@ var _trail: GPUParticles3D
 var _engine_light: OmniLight3D
 var _pending_velocity := Vector3.ZERO
 var _has_pending := false
+var _pending_dv := Vector3.ZERO
+var _pending_origin := Vector3.ZERO
+var _has_origin := false
+## Velocities from the last few physics steps. The contact signal can arrive a step after the
+## solver has already killed our speed, so deflect() looks back for the true impact velocity.
+var _recent_velocities: Array[Vector3] = []
 var _roll := 0.0
 var _last_heading := Vector3.RIGHT
 
@@ -99,6 +105,35 @@ func launch(velocity: Vector3) -> void:
 	face(velocity)
 
 
+## Instant change in velocity (Kick Booster).
+func boost(dv: Vector3) -> void:
+	_pending_dv += dv
+	_engine_light.light_energy = 8.0
+
+
+## Bounce off a round body centered at `center` (Deflector Shield).
+func deflect(center: Vector3, body_radius: float) -> void:
+	var n := global_position - center
+	n.z = 0.0
+	n = n.normalized()
+	var v := linear_velocity
+	for rv in _recent_velocities:
+		if rv.dot(n) < v.dot(n):
+			v = rv
+	var vn := v.dot(n)
+	if vn < 0.0:
+		v -= 2.0 * vn * n
+	v *= 0.85
+	# Always leave with some outward speed so we don't grind along the surface.
+	v += n * maxf(0.0, 4.0 - v.dot(n))
+	_pending_velocity = v
+	_has_pending = true
+	_recent_velocities.clear()
+	# Lift clear of the surface so the contact ends instead of re-triggering.
+	_pending_origin = center + n * (body_radius + 0.6)
+	_has_origin = true
+
+
 func stop() -> void:
 	launched = false
 	_trail.emitting = false
@@ -109,14 +144,25 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 	if _has_pending:
 		state.linear_velocity = _pending_velocity
 		_has_pending = false
+	if _has_origin:
+		state.transform.origin = _pending_origin
+		_has_origin = false
+	if _pending_dv != Vector3.ZERO:
+		state.linear_velocity += _pending_dv
+		_pending_dv = Vector3.ZERO
+	_recent_velocities.push_back(state.linear_velocity)
+	if _recent_velocities.size() > 6:
+		_recent_velocities.pop_front()
 	if not launched:
 		return
 	var pos := state.transform.origin
 	var vel := state.linear_velocity
 	var t := WorldClock.time
 	var force := Gravity.acceleration(pos, Gravity.snapshot(get_tree())) * mass
+	var weather := Vector3.ZERO
 	for n in get_tree().get_nodes_in_group(&"force_sources"):
-		force += (n as Planet).environment_force(pos, vel, t)
+		weather += (n as Planet).environment_force(pos, vel, t)
+	force += weather * Game.run.weather_resist
 	force.z = 0.0
 	state.apply_central_force(force)
 
@@ -132,9 +178,10 @@ func _process(delta: float) -> void:
 	var turn := _last_heading.cross(heading).z / maxf(delta, 0.0001)
 	_roll = lerpf(_roll, clampf(-turn * 0.35, -1.0, 1.0), 1.0 - exp(-delta * 4.0))
 	face(heading)
-	_engine_light.light_energy = 1.2 + sin(Time.get_ticks_msec() * 0.03) * 0.3
+	var idle := 1.2 + sin(Time.get_ticks_msec() * 0.03) * 0.3
+	_engine_light.light_energy = lerpf(_engine_light.light_energy, idle, 1.0 - exp(-delta * 6.0))
 
 
 func _on_body_entered(body: Node) -> void:
 	if launched and body.is_in_group(&"solid"):
-		crashed.emit(global_position)
+		crashed.emit(global_position, body as Node3D)

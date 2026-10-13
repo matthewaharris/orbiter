@@ -16,16 +16,25 @@ const MAX_DRAG := 10.0
 ## The preview can show at most this many seconds of flight; sensor_range scales it.
 const SENSOR_HORIZON_SECONDS := 12.0
 
+const SAVE_PATH := "user://orbiter_save.cfg"
+
 var level_index := 0
 var preview_enabled := true
+## The current roguelite run (resources, upgrades, ship stats).
+var run := RunState.new()
 
-# --- Ship stats (Phase 2/3: these come from upgrades and parts) ---
-## Fraction of SENSOR_HORIZON_SECONDS the aim preview shows.
-var sensor_range := 0.12
+# --- Persistent between runs (saved to SAVE_PATH) ---
+## Meta currency. Phase 3 spends it on ship parts.
+var stardust_bank := 0
+var best_sectors := 0
+var runs_played := 0
+
+# --- Ship stats (Phase 3: these come from ship parts) ---
 var ship_mass := 1.0
 
 
 func _ready() -> void:
+	load_meta()
 	_add_action(&"launch", [KEY_SPACE])
 	_add_action(&"aim_ccw", [KEY_A, KEY_LEFT])
 	_add_action(&"aim_cw", [KEY_D, KEY_RIGHT])
@@ -49,4 +58,35 @@ func _add_action(action: StringName, keys: Array) -> void:
 
 
 func preview_seconds() -> float:
-	return SENSOR_HORIZON_SECONDS * sensor_range
+	return SENSOR_HORIZON_SECONDS * run.sensor_range
+
+
+func new_run() -> void:
+	run = RunState.new()
+	run.refill_launch()
+	run.refill_sector()
+
+
+## Moves the run's stardust into the bank and saves.
+func bank_run() -> void:
+	stardust_bank += run.stardust
+	best_sectors = maxi(best_sectors, run.sectors_cleared)
+	runs_played += 1
+	save_meta()
+
+
+func load_meta() -> void:
+	var cfg := ConfigFile.new()
+	if cfg.load(SAVE_PATH) != OK:
+		return
+	stardust_bank = cfg.get_value("meta", "stardust", 0)
+	best_sectors = cfg.get_value("meta", "best_sectors", 0)
+	runs_played = cfg.get_value("meta", "runs_played", 0)
+
+
+func save_meta() -> void:
+	var cfg := ConfigFile.new()
+	cfg.set_value("meta", "stardust", stardust_bank)
+	cfg.set_value("meta", "best_sectors", best_sectors)
+	cfg.set_value("meta", "runs_played", runs_played)
+	cfg.save(SAVE_PATH)

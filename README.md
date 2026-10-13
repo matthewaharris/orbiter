@@ -4,7 +4,30 @@ A gravity-slingshot game: set your launch angle, power, and **timing**, then let
 and space weather carry your ship to the portal. It plays in 2D, but every planet, star, and ship is
 rendered in full 3D, and you can drop into a 3D chase cam mid-flight.
 
-Inspired by the early-2000s flash slingshot games, with roguelite runs and KSP-style ship building planned.
+Inspired by the early-2000s flash slingshot games. Play is organized into roguelite runs, and
+KSP-style ship building is planned.
+
+## How a run works
+
+- Clear the sectors in order. **Every launch burns 1 fuel cell**, and **crashing costs 1 hull**.
+- The run ends when your hull or fuel hits 0, or when you clear the last sector.
+- Clearing a sector gives +3 fuel and stardust. A first-try clear adds +1 fuel and +5 stardust;
+  clearing without the aim preview adds +10 stardust.
+- After each clear, **pick 1 of 3 upgrades** (catalog in `game/scripts/upgrades.gd`):
+
+| Upgrade | Effect |
+|---|---|
+| Kick Booster | Tap SPACE mid-flight to thrust toward your cursor (charges per launch) |
+| Singularity Seed | Right-click while aiming to place a black hole; right-click it again to pick it up |
+| Long-Range Sensors | Longer aim preview |
+| Hull Plating | +1 max hull |
+| Deflector Shield | Bounce off one planet impact per launch |
+| Magnetic Shield | Wind, storms, and CMEs push you 45% less |
+| Overcharged Bands | +15% launch speed |
+| Portal Magnet | Bigger portal catch radius |
+| Fuel Cache / Field Repair | Consumables: +4 fuel / +2 hull |
+
+- Stardust is banked between runs (saved to `user://orbiter_save.cfg`); Phase 3 will spend it on ship parts.
 
 - Design and roadmap: [`docs/PLAN.md`](docs/PLAN.md)
 - Planet, star, and hazard design: [`docs/WORLD_SCHEME.md`](docs/WORLD_SCHEME.md)
@@ -21,11 +44,13 @@ Inspired by the early-2000s flash slingshot games, with roguelite runs and KSP-s
 | Drag the mouse (pull back from the slingshot) | Set angle and power |
 | A/D or ←/→ | Fine-tune angle (hold **Shift** for extra fine) |
 | W/S or ↑/↓ | Fine-tune power |
-| **Space** | Launch |
+| **Space** | Launch (mid-flight: boost, if you have Kick Booster) |
+| **Right-click** | Place / pick up a black hole (Singularity Seed) |
+| 1 / 2 / 3 | Pick an upgrade card |
 | **C** / Tab | Toggle the 3D chase cam |
 | **P** | Toggle the aim preview (off = hard mode) |
 | **R** | Reset the ship |
-| Enter / click | Next sector after a clear |
+| Enter / click | Start a new run after the run ends |
 
 ## Project layout
 
@@ -64,7 +89,12 @@ Pass these after `--`, for example `godot --path game -- --level=3 --chase`:
 
 | Flag | Effect |
 |---|---|
-| `--level=N` | Start on level N |
+| `--level=N` | Start the run on sector N |
+| `--upgrades=boost,singularity,...` | Grant upgrades (ids from `upgrades.gd`) |
+| `--hull=N`, `--fuel=N` | Override starting hull / fuel |
+| `--hole-at=X,Y` | Place a black hole (needs `--upgrades=singularity`) |
+| `--boost-at=SEC` | Auto-boost toward the portal SEC seconds after `--launch-at` |
+| `--picker` | Open the upgrade picker immediately |
 | `--aim=DEG,POWER` | Preset the aim, e.g. `--aim=16,0.7` |
 | `--launch-at=SEC` | Launch automatically after SEC seconds |
 | `--chase` | Start in the chase cam |
